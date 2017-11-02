@@ -1,27 +1,46 @@
-// alert('ok');
 import { Observable } from 'rxjs';
 
-let numbers = [1, 5, 10];
-// let source = Observable.from(numbers);
-let source = Observable.create(observer => {
+// let circle = document.getElementById('circle');
+let output = document.getElementById('output');
+let button = document.getElementById('button');
 
-    let index = 0;
-    let produceValue = () => {
-        observer.next(numbers[index++]);
+// let source = Observable.fromEvent(document, 'mousemove')
+//     .map((e: MouseEvent) => {
+//         return {
+//             x: e.clientX,
+//             y: e.clientY
+//         }
+//     })
+//     .filter(value => value.x < 500)
+//     .delay(300);
 
-        if (index < numbers.length) {
-            setTimeout(produceValue, 2000);
-        } else {
-            observer.complete();
-        }
-    }
+let click = Observable.fromEvent(button, 'click')
 
-    produceValue();
-
-});
-
-source.subscribe(
-    value => console.log(`value: ${value}`),
+click.subscribe(
+    e => load('movies.json'),
     e => console.log(`error: ${e}`),
     () => console.log('complete')
 );
+
+// function onNext(value) {
+//     circle.style.left = value.x + 'px';
+//     circle.style.top = value.y + 'px';
+//     console.log(value);
+// }
+
+function load(url: string) {
+    console.log(url);
+    let xhr = new XMLHttpRequest();
+
+    xhr.addEventListener('load', () => {
+        let movies = JSON.parse(xhr.responseText);
+        movies.forEach(m => {
+            let div = document.createElement('div');
+            div.innerText = m.title;
+            output.appendChild(div);
+        });
+    });
+
+    xhr.open('GET', url);
+    xhr.send();
+}
